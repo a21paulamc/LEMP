@@ -1,0 +1,37 @@
+version: "3"
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: core-php
+    volumes:
+      - ./www:/var/www/html
+
+      
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - php
+    volumes:
+      - ./www:/var/www/html 
+      - ./wildcard:/etc/letsencrypt
+      - ./nginx:/etc/nginx/conf.d 
+      - ./symfony:/var/www/html 
+      - ./log/nginx:/var/log/nginx/
+
+  symfony:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: sv-symfony
+    volumes:
+      - ./symfony:/var/www/html/symfony
+      - ./symfoConf/prod/.env:/var/www/html/symfony/.env
+
+
+volumes:
+  basedatos:
